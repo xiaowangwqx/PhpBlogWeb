@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Welcome to this blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles for this template -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">PHP HOMEWORK</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">主页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="my.html">我的博客</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tags.html">分类</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">联系我</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="addBlog">上传博客</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html" id="usernameLabel">登录</a>
+            </li>
+            <li class="nav-item" id="logout">
+              <a class="nav-link" href="login.html" onclick="logout()">退出</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('img/home-bg.jpg')">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <h1>Clean Blog</h1>
+              <span class="subheading">A Blog Theme by Start Bootstrap</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container" id="app">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-preview" v-for="(article, index) in articleList" :key="article.id">
+            <a href="#" @click="linkToPost(index)">
+              <h2 class="post-title">
+                {{ article.title }}
+              </h2>
+ <!--              <h3 class="post-subtitle">
+                Problems look mighty small from 150 miles up
+              </h3> -->
+            </a>
+            <p class="post-meta">Posted by
+              <a href="#">{{article.author}}</a>
+              on {{article.createtime}}</p>
+            <hr>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <p class="copyright text-muted">Copyright &copy; Your Website 2019</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/clean-blog.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+    <script type="text/javascript">
+      var app = new Vue({
+        el: '#app',
+        data: {
+          articleList: [],
+          baseURL: 'http://127.0.0.1'
+        },
+        methods: {
+          fetchArticle () {
+            if (!window.location.search) {
+              var author = window.localStorage.getItem('username');
+              axios.get(`${this.baseURL}/basic/web/index.php?r=article/get_articles`)
+                .then(res => {
+                  console.log(res);
+                  this.articleList = res.data
+                  this.articleList.forEach(element=>{
+                      element.createtime = this.timetrans(element.createtime);
+                  });
+                }).catch(function () {
+
+                })
+            } else {
+              var type = window.location.search.split('type=')[1]
+              axios.get(`${this.baseURL}/basic/web/index.php?r=article/get_article_by_type&type=${type}`)
+                .then(res => {
+                  this.articleList = res.data
+                  this.articleList.forEach(element=>{
+                      element.createtime = this.timetrans(element.createtime);
+                  });
+                }).catch(err => {
+                  console.log('error')
+                })
+            }
+          },
+          linkToPost (index) {
+            window.location.href = `post.html?id=${this.articleList[index].id}`
+
+          },
+          //时间戳转yyyy-mm-dd hh:mm:ss
+          timetrans(date){
+            var date = new Date(date*1000);
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+            var D = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate()) + ' ';
+            var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+            var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+            var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
+            return Y+M+D+h+m+s;
+          }
+        },
+        mounted () {
+          var username = window.localStorage.getItem('username');
+          if(username!=='null'){
+            $('#usernameLabel').html(username);
+          }else{
+            $('#usernameLabel').html('登录');
+          }
+          this.fetchArticle()
+        }
+      })
+
+      function logout(){
+        window.localStorage.setItem('username',null);
+      }
+
+      $('#addBlog').click(function(){
+          var username = window.localStorage.getItem('username');
+          if(username==='null'){
+            alert('请先登录');
+            return;
+          }
+          window.location.href='simplemde.html';
+      });
+
+    </script>
+  </body>
+</html>

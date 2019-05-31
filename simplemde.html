@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+	<!-- 引用Markdown的css -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+	<link rel="stylesheet" href="./admin.css">
+</head>
+
+<body>
+	<div class="" id="app">
+		<div class="navs">
+			<ul>
+				<li :class="{ active: isActive }"><a href="javascript:;" @click="fetchArticle" >已发布</a></li>
+				<li :class="{ active: !isActive }"><a href="javascript:;" @click="fetchDraft" >草稿</a></li>
+			</ul>	
+		</div>
+		<div class="posts">
+			<h2><span><img src="./images/book.png" style="vertical-align: middle;"></span>	文章列表 
+				<span v-if="showAdd" style="float: right; height: 30px; line-height: 70px;"><img class="add-img" src="./images/add.png" alt="" @click="newPost" style="border-radius: 50%;vertical-align: middle; width: 30px;"></span></h2>
+			<ul class="post-list">
+				<li class="post" v-for="(article, index) in articleList">
+					<a @click="showDetailPost(index)">
+						<p class="post-title">{{ article.title }} <button class="delete-btn" @click="deletePost(index)">删除</button></p>
+						<p class="post-time">{{ article.createtime | formatTime }}</p>
+						<hr>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="post-edit">
+		<h2><input type="text" id="post-title" :value="articleList[0].title"></h2>
+		<div class="tools">
+			<span>分类</span> <input type="text" class="post-type">
+			<div class="btn-wrap">
+				<button class="btn edit">修改文章</button>
+				<button class="btn save">发布文章</button>
+				<button class="btn edit-draft">修改草稿</button>
+			</div>
+		</div>
+		<textarea id="myid"></textarea>
+	</div>
+
+<!-- 引用Markdown的js -->
+	<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+	<script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+	<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+	<script>
+		var simplemde = new SimpleMDE({ element: document.getElementById('myid') });
+		var save_btn = document.querySelector('.save')
+		var edit_btn = document.querySelector('.edit')
+		var edit_draft_btn = document.querySelector('.edit-draft')
+		var titleInput = document.querySelector('.title')
+		var typeInput = document.querySelector('.post-type')
+		var postTitleInput = document.getElementById('post-title')
+		var btnWrap = document.querySelector('.btn-wrap')
+		var postId = 0
+		var deleteIndex = 0
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				isActive: false,
+				articleList: [],
+				newpost: {},
+				baseURL: 'http://127.0.0.1',
+				showAdd: false,
+				author:''
+			},
+			methods: {
+				fetchArticle() {
+					save_btn.style.display = 'none'
+					edit_btn.style.display = 'inline-block'
+					edit_draft_btn.style.display = 'none'
+					btnWrap.style.width = '100px'
+					this.showAdd = false
+					this.isActive = true
+					var author = this.author;
+					axios.get(`http://127.0.0.1/basic/web/index.php?r=article/get_articles&author=${author}`)
+						.then(res => {
+							this.articleList = res.data
+							console.log(this.articleList)
+						}).catch(err => {
+
+						})
+				},
+				fetchDraft () {
+					edit_draft_btn.style.display = 'inline-block'
+					save_btn.style.display = 'inline-block'
+					edit_btn.style.display = 'none'
+					btnWrap.style.width = '200px'
+					this.showAdd = true
+					this.isActive = false
+					var author = this.author;
+					axios.get(`http://127.0.0.1/basic/web/index.php?r=draft/get_articles&author=${author}`)
+						.then(res => {
+							this.articleList = res.data
+							console.log(this.articleList)
+						}).catch(err => {
+							this.articleList = []
+						})
+				},
+				showDetailPost (index) {
+					typeInput.value = this.articleList[index].type
+					postId = this.articleList[index].id
+					postTitleInput.value = this.articleList[index].title
+					simplemde.value(this.articleList[index].content_md)
+					deleteIndex = index
+					console.log(this.articleList)
+					console.log(postId)
+				}, 
+				newPost () {
+					this.newpost.title = '请输入文章名'
+					this.newpost.type = ''
+					this.newpost.content = ''
+					this.newpost.content_md = ''
+					this.newpost.createtime = +new Date() / 1000
+					this.articleList.push(this.newpost)
+					
+					
+					var content_md = this.newpost.content_md;
+					var content = content_md;
+					var	title = this.newpost.title;
+					var	type = this.newpost.type;
+					var author = this.author;
+
+					axios.post(`http://127.0.0.1/basic/web/index.php?r=draft/add_article`, {
+						title,
+						content,
+						content_md,
+						type,
+						author
+					}).then(res => {
+						this.fetchDraft()
+					}).catch(function () {
+						console.log('dd')
+					})
+				},
+				deletePost (index) {
+					event.stopPropagation()
+					if (confirm('确认删除？')) {
+						var r = this.isActive ? 'article' : 'draft'
+						axios.get(`http://127.0.0.1/basic/web/index.php?r=${r}/delete_article&id=${this.articleList[index].id}`)
+							.then(res => {
+								this.articleList.splice(index, 1)
+								console.log('success')
+							}).catch(err => {
+								console.log(err)
+							})
+					}
+
+				}
+			},
+			filters: {
+				formatTime(time) {
+					var date = new Date((+time) * 1000)
+					return date.toLocaleString()
+				} 
+			},
+			mounted() {
+				this.author = window.localStorage.getItem('username');
+				console.log(this.author);
+				this.fetchArticle();
+
+			}
+		})
+		postTitleInput.addEventListener('input', function() {
+			// var len = app.articleList.length
+			// app.articleList[len-1].title = event.target.value
+			app.newpost.title = event.target.value
+			app.newpost.content = simplemde.markdown(simplemde.value())
+		})
+		simplemde.codemirror.on('change', function() {
+			app.newpost.content = simplemde.markdown(simplemde.value())
+		})
+
+		save_btn.addEventListener('click', function () {
+			var content_md = simplemde.value();
+			var content = simplemde.markdown(content_md);
+			var title = postTitle.value;
+			var type = typeInput.value;
+			var author = window.localStorage.getItem('username');
+			console.log({
+				title,
+				content,
+				content_md,
+				type,
+				author
+			})
+			axios.post(`http://127.0.0.1/basic/web/index.php?r=article/add_article`, {
+				title,
+				content,
+				content_md,
+				type,
+				author
+			}).then(res => {
+				console.log(res)
+			}).catch(function () {
+				console.log('dd')
+			})
+			axios.get(`http://127.0.0.1/basic/web/index.php?r=draft/delete_article&id=${app.articleList[deleteIndex].id}`)
+				.then(res => {
+					app.articleList.splice(deleteIndex, 1)
+					console.log('success')
+					typeInput.value = ''
+					titleInput.value = ''
+					simplemde.value('')
+				}).catch(err => {
+					console.log(err)
+				})
+		})
+		postTitle = document.getElementById('post-title')
+		edit_btn.addEventListener('click', function () {
+			var content_md = simplemde.value(),
+					content = simplemde.markdown(content_md),
+					title = postTitle.value
+					type = typeInput.value
+					id = postId
+			axios.post(`http://127.0.0.1/basic/web/index.php?r=article/update_article`, {
+				id,
+				title,
+				content,
+				content_md,
+				type
+			}).then(res => {
+				alert('修改成功')
+				console.log(res)
+			}).catch(function () {
+				console.log('dd')
+			})
+		})
+		edit_draft_btn.addEventListener('click', function () {
+			var content_md = simplemde.value(),
+					content = simplemde.markdown(content_md),
+					title = postTitle.value
+					type = typeInput.value
+					id = postId
+			console.log(
+				 {
+					id,
+					title,
+					content,
+					content_md,
+					type
+				}
+			)
+			axios.post(`http://127.0.0.1/basic/web/index.php?r=draft/update_article`, {
+				id,
+				title,
+				content,
+				content_md,
+				type
+			}).then(res => {
+				app.fetchDraft()
+				console.log(res)
+			}).catch(function () {
+				console.log('dd')
+			})
+		})
+	</script>
+</body>
+
+</html>

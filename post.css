@@ -1,0 +1,72 @@
+.comments {
+  margin: 100px auto;
+  max-width: 680px;
+}
+.comments .replay-box {
+  position: relative;
+  box-sizing: border-box;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+}
+.comments input {
+  margin: 0;
+  padding-top: 10px;
+  width: 32.5%;
+  outline: none;
+  border: 0;
+  border-bottom: 2px dotted #ddd;
+}
+.comments input:focus {
+  border-color: #000;
+}
+.comments textarea {
+  margin-top: 10px;
+  width: 100%;
+  border: 0;
+  outline: none;
+  height: 230px;
+  resize: none;
+}
+.comments .post-comment {
+  background-color: #000;
+  color: #fff;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 15px;
+  padding: 5px 8px;
+}
+.comments .post-comment:active {
+  bottom: 8px;
+}
+.comments .comment-list {
+  margin-top: 30px;
+  width: 100%;
+}
+.comments .comment-list .comment {
+  border: 1px solid #ddd;
+  width: 100%;
+  padding: 20px;
+  margin-top: 10px;
+}
+.comments .comment-list .comment .comment-header {
+  width: 100%;
+  height: 70px;
+}
+.comments .comment-list .comment .comment-header .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+.comments .comment-list .comment .comment-header .name {
+  margin-left: 30px;
+}
+.comments .comment-list .comment .comment-time {
+  margin-top: 20px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}

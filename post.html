@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Welcome to this blog</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Custom styles for this template -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- highlight.js monokai.css -->
+    <link rel="stylesheet" type="text/css" href="css/monokai.css">
+    <link rel="stylesheet" href="./post.css">
+    <!-- element ui -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">PHP HOME-WORK</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">主页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="my.html">我的博客</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="tags.html">分类</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">联系我</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" id="addBlog">上传博客</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html" id="usernameLabel">登录</a>
+            </li>
+            <li class="nav-item" id="logout">
+              <a class="nav-link" href="login.html" onclick="logout()">退出</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div id="app">
+      <header class="masthead" style="background-image: url('img/post-bg.jpg')">
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+              <div class="post-heading">
+                <h1>{{ article.title }}</h1>
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <article>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto" v-html="article.content">
+            </div>
+          </div>
+        </div>
+      </article>
+      <hr>
+      <p style="text-align: center; margin: 0; font-size: 20px; font-weight: bold;">{{ zanNumber }}</p>
+      <div class="zan" style="width: 48px;height: 48px;margin: 0 auto; cursor: pointer;background-image: url('./images/zan.gif')" @click="dianzan">
+      </div>
+    <div class="comments">
+      <form class="replay-box" onsubmit="return false;">
+        <input type="text" name="author" placeholder="您的昵称" v-model="name">
+        <input type="text" name="email" placeholder="邮箱地址呢" v-model="email">
+        <input type="text" name="url" placeholder="您的站点" v-model="websiteURL">
+        <textarea name="" id="" cols="30" rows="10" placeholder="回复的内容" v-model="content"></textarea>
+        <button class="post-comment" @click="postComment">提交评论</button>
+      </form>
+      <div class="comment-list">
+        <div class="comment" v-for="item in commentList">
+          <div class="comment-header">
+            <img src="./images/user-icon.png" alt="" class="avatar">
+            <span class="name">{{ item.commenter_name }}</span>
+          </div>
+          <div class="comment-content">
+            {{ item.content }}
+          </div>
+          <div class="comment-time">{{ item.createtime | formatTime}}</div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="#">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <p class="copyright text-muted">Copyright &copy; Your Website 2019</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/clean-blog.min.js"></script>
+
+    <!-- highlight.js -->
+    <script src="js/highlight.pack.js"></script>
+
+    <script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script type="text/javascript">
+      // import Message from ''
+      // Vue.prototype.$message = Message;
+      var app = new Vue({
+        el: '#app',
+        data: {
+          article: null,
+          name: '',
+          email: '',
+          content: '',
+          websiteURL: '',
+          baseURL: 'http://127.0.0.1',
+          commentList: [],
+          zanNumber: 0
+        },
+        methods: {
+          fetchArticle () {
+            var id = window.location.href.split('id=')[1]
+            axios.get(`${this.baseURL}/basic/web/index.php?r=article/get_article_by_id&id=${id}`)
+              .then(res => {
+                this.article = res.data[0]
+                this.zanNumber = +this.article.likes
+                this.$nextTick(function() {
+                  console.log(this)
+                  // this.fetchComments()
+                  console.log(this.commentList)
+                  $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                  });
+                })
+              }).catch(function() {
+                
+              })
+          },
+          fetchComments () {
+            var id = window.location.href.split('id=')[1]
+            axios.get(`${this.baseURL}/basic/web/index.php?r=comment/get_comment&article_id=${id}`)
+              .then(res => {
+                this.commentList = res.data
+              }).catch(function () {
+
+              })
+          },
+          dianzan () {
+            var id = window.location.href.split('id=')[1]
+            var article_id = 'id' + id
+            if (!window.localStorage[article_id]) {
+              axios.get(`${this.baseURL}/basic/web/index.php?r=article/add_likes&article_id=${id}`)
+                .then(res => {
+                  alert('点赞成功')
+                  this.zanNumber++
+                  window.localStorage[article_id] = true
+                })
+            } else {
+              alert('您已经点过赞了！')
+            }
+          },
+          postComment() {
+            // event.target.parent.preventDefault();
+            console.log(event.target.parentElement)
+            var article_id = window.location.href.split('id=')[1]
+            var content = this.content
+            var commenter_name = this.name
+            var email = this.email
+            var url = this.websiteURL
+            axios.post(`${this.baseURL}/basic/web/index.php?r=comment/add_comment`, {
+              article_id,
+              content,
+              commenter_name,
+              email,
+              url
+            }).then(res => {
+              var status = res.data.suggestion
+              var label = res.data.label
+              var msg = ''
+              if (status === 'pass') {
+                alert('评论成功')
+                this.fetchComments()
+                this.name = ''
+                this.websiteURL = ''
+                this.url = ''
+                this.email = ''
+                this.content = ''
+              } else if (status === 'block') {
+                switch (label) {
+                  case 'ad':
+                    msg = '广告'
+                    break;
+                  case 'spam':
+                    msg = '含垃圾信息'
+                    break;
+                  case 'politics':
+                    msg = '涉政'
+                    break;
+                  case 'terrorism':
+                    msg = '爆恐'
+                    break;
+                  case 'abuse':
+                    msg = '辱骂'
+                    break;
+                  case 'flood':
+                    msg = '灌水'
+                    break
+                  case 'contraband':
+                    msg = '违禁'
+                    break
+                  case 'meaningless':
+                    msg = '无意义'
+                    break
+                  default:
+                    break;
+                }
+                alert(`${msg}, 请重新修改后提交`)
+              }
+              console.log(res)
+            }).catch(error => {
+              console.log('error')
+            })
+          }
+        },
+        filters: {
+          formatTime (time) {
+            var date = new Date((+time) * 1000)
+            return date.toLocaleString()
+          } 
+        },
+        mounted () {
+          var username = window.localStorage.getItem('username');
+          if(username!=='null'){
+            $('#usernameLabel').html(username);
+          }else{
+            $('#usernameLabel').html('登录');
+          }
+          this.fetchArticle()
+          this.fetchComments()
+        }
+      })
+
+      function logout(){
+        window.localStorage.setItem('username',null);
+      }
+
+      $('#addBlog').click(function(){
+          var username = window.localStorage.getItem('username');
+          if(username==='null'){
+            alert('请先登录');
+            return;
+          }
+          window.location.href='simplemde.html';
+      });
+
+    </script>
+  </body>
+
+</html>
